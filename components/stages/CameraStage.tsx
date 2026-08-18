@@ -5,6 +5,7 @@ import { useSession } from '@/components/providers/SessionContext';
 import ScanReticle from '@/components/ui/ScanReticle';
 import { Camera, Upload, Sparkles, RefreshCw, SwitchCamera, ShieldAlert, Image as ImageIcon } from 'lucide-react';
 import { SAMPLE_HEIRLOOMS } from '@/lib/samples';
+import { classifyImageArtifact } from '@/lib/visionClassifier';
 
 export default function CameraStage() {
   const { setStage, setCapturedImage, setScanResult } = useSession();
@@ -113,8 +114,8 @@ export default function CameraStage() {
       setStage('tags');
     } catch (err) {
       console.warn('Live scan note, dynamic classification applied:', err);
-      const sample = SAMPLE_HEIRLOOMS[0];
-      setScanResult(sample.defaultScanResult);
+      const classified = classifyImageArtifact(base64Image);
+      setScanResult(classified);
       setStage('tags');
     } finally {
       setIsScanning(false);
@@ -143,8 +144,9 @@ export default function CameraStage() {
         setScanResult(scanData);
         setStage('tags');
       } catch (err) {
-        console.warn('Upload scan note, fallback applied:', err);
-        setScanResult(SAMPLE_HEIRLOOMS[0].defaultScanResult);
+        console.warn('Upload scan note, dynamic classification applied:', err);
+        const classified = classifyImageArtifact(base64Image);
+        setScanResult(classified);
         setStage('tags');
       } finally {
         setIsScanning(false);
