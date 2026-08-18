@@ -3,9 +3,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from '@/components/providers/SessionContext';
 import ScanReticle from '@/components/ui/ScanReticle';
-import { Camera, Upload, Sparkles, RefreshCw, SwitchCamera, ShieldAlert, Image as ImageIcon } from 'lucide-react';
+import { Camera, Upload, Sparkles, RefreshCw, SwitchCamera, ShieldAlert, Book, Car, Clock, Disc, Flame as LampIcon, Shirt, Gem, Box } from 'lucide-react';
 import { SAMPLE_HEIRLOOMS } from '@/lib/samples';
-import { classifyImageArtifact } from '@/lib/visionClassifier';
+import { classifyImageArtifact, ARTIFACT_ONTOLOGY } from '@/lib/visionClassifier';
+
+const CATEGORY_OPTIONS = [
+  { id: 'book', label: '📚 Book / Document', icon: Book },
+  { id: 'car', label: '🚗 Vintage Car', icon: Car },
+  { id: 'watch', label: '🕰️ Pocket Watch', icon: Clock },
+  { id: 'camera', label: '📷 Camera', icon: Disc },
+  { id: 'lamp', label: '🪔 Pooja Lamp', icon: LampIcon },
+  { id: 'textile', label: '🧣 Silk Shawl', icon: Shirt },
+  { id: 'jewelry', label: '📿 Jewelry', icon: Gem },
+  { id: 'woodbox', label: '📦 Spice Box', icon: Box },
+];
 
 export default function CameraStage() {
   const { setStage, setCapturedImage, setScanResult } = useSession();
@@ -16,6 +27,7 @@ export default function CameraStage() {
   const [isScanning, setIsScanning] = useState(false);
   const [statusText, setStatusText] = useState('Hold steady over your heirloom...');
   const [cameraReady, setCameraReady] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('book');
 
   useEffect(() => {
     let activeStream: MediaStream | null = null;
@@ -102,7 +114,10 @@ export default function CameraStage() {
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image }),
+        body: JSON.stringify({
+          image: base64Image,
+          categoryHint: selectedCategory,
+        }),
       });
 
       if (!response.ok) {
@@ -114,8 +129,8 @@ export default function CameraStage() {
       setStage('tags');
     } catch (err) {
       console.warn('Live scan note, dynamic classification applied:', err);
-      const classified = classifyImageArtifact(base64Image);
-      setScanResult(classified);
+      const template = ARTIFACT_ONTOLOGY[selectedCategory] || classifyImageArtifact(base64Image);
+      setScanResult(template);
       setStage('tags');
     } finally {
       setIsScanning(false);
@@ -138,15 +153,18 @@ export default function CameraStage() {
         const response = await fetch('/api/scan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Image }),
+          body: JSON.stringify({
+            image: base64Image,
+            categoryHint: selectedCategory,
+          }),
         });
         const scanData = await response.json();
         setScanResult(scanData);
         setStage('tags');
       } catch (err) {
         console.warn('Upload scan note, dynamic classification applied:', err);
-        const classified = classifyImageArtifact(base64Image);
-        setScanResult(classified);
+        const template = ARTIFACT_ONTOLOGY[selectedCategory] || classifyImageArtifact(base64Image);
+        setScanResult(template);
         setStage('tags');
       } finally {
         setIsScanning(false);
@@ -164,18 +182,38 @@ export default function CameraStage() {
   return (
     <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center p-2 sm:p-4 z-10">
       {/* Top instruction header */}
-      <div className="mb-3 text-center">
+      <div className="mb-2 text-center">
         <h2 className="text-lg sm:text-2xl font-serif font-bold text-white flex items-center justify-center gap-2">
           <Camera className="w-5 h-5 text-aurora-pink" />
           <span>Point Camera or Upload Heirloom Photo</span>
         </h2>
         <p className="text-xs text-pink-200/80 font-sans mt-0.5">
-          Hold steady or upload any image. The Ancestor will examine the patina and craftsmanship.
+          Hold steady over your heirloom, document, or vintage object.
         </p>
       </div>
 
-      {/* Main Viewfinder Frame (Compact & responsive) */}
-      <div className="relative w-full h-[280px] sm:h-[360px] md:h-[400px] max-w-3xl rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/40 shadow-glow-pink bg-black flex items-center justify-center">
+      {/* Target Category Selector Bar */}
+      <div className="w-full max-w-3xl mb-3 flex flex-wrap items-center justify-center gap-1.5 p-2 rounded-2xl glass-panel border border-aurora-pink/30">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-pink-300 mr-1 font-semibold">
+          Detecting:
+        </span>
+        {CATEGORY_OPTIONS.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-serif transition-all flex items-center gap-1.5 cursor-pointer ${
+              selectedCategory === cat.id
+                ? 'bg-gradient-to-r from-aurora-pink to-purple-600 text-white shadow-glow-pink font-bold border border-white/40 scale-105'
+                : 'bg-white/5 hover:bg-white/10 text-neutral-300 border border-white/10'
+            }`}
+          >
+            <span>{cat.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Main Viewfinder Frame */}
+      <div className="relative w-full h-[280px] sm:h-[350px] md:h-[380px] max-w-3xl rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/40 shadow-glow-pink bg-black flex items-center justify-center">
         {/* Video feed */}
         <video
           ref={videoRef}
@@ -193,7 +231,7 @@ export default function CameraStage() {
               Camera Access Restricted
             </h3>
             <p className="text-xs text-neutral-300 max-w-sm mb-4 font-sans leading-relaxed">
-              If your camera is blocked or shutter is closed, you can upload any photo directly or choose a preset below.
+              If camera shutter is closed or permission blocked, you can upload any photo directly or choose a preset below.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <label className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-aurora-pink to-purple-600 hover:brightness-110 text-white font-serif text-xs tracking-wider uppercase cursor-pointer shadow-glow-pink transition-all">
@@ -209,7 +247,7 @@ export default function CameraStage() {
 
               <button
                 onClick={handleRetryCamera}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-panel text-pink-200 hover:text-white text-xs font-serif transition-all"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-panel text-pink-200 hover:text-white text-xs font-serif transition-all cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Retry Camera</span>

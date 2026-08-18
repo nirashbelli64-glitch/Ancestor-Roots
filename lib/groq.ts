@@ -72,7 +72,18 @@ function parseSafeJson<T>(raw: string, fallback: T): T {
 /**
  * Stage 1: Vision Object Scan with AR Tag Anchors
  */
-export async function scanObjectWithVision(imageBase64: string): Promise<ScanResult> {
+export async function scanObjectWithVision(
+  imageBase64: string,
+  categoryHint?: string,
+  customName?: string
+): Promise<ScanResult> {
+  // If user provided a specific category hint or custom name
+  if (categoryHint && ARTIFACT_ONTOLOGY[categoryHint]) {
+    const res = { ...ARTIFACT_ONTOLOGY[categoryHint] };
+    if (customName) res.object = customName;
+    return res;
+  }
+
   // 1. Try Groq Vision models first if API key exists
   if (process.env.GROQ_API_KEY) {
     for (const model of VISION_MODELS) {
@@ -104,7 +115,7 @@ export async function scanObjectWithVision(imageBase64: string): Promise<ScanRes
     }
   }
 
-  // 2. Intelligent Visual Classifier
+  // 2. Intelligent Visual Classifier (Defaults to book for indoor captures)
   return classifyImageArtifact(imageBase64);
 }
 

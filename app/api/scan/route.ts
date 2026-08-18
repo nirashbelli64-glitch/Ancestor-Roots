@@ -4,7 +4,7 @@ import { scanObjectWithVision } from '@/lib/groq';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { image } = body;
+    const { image, categoryHint, customName } = body;
 
     if (!image) {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await scanObjectWithVision(image);
+    const result = await scanObjectWithVision(image, categoryHint, customName);
     return NextResponse.json(result);
   } catch (error: any) {
     console.error('Scan API error:', error);
