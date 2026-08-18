@@ -43,7 +43,7 @@ void main() {
 
 const fragmentShader = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
-precision highp float;
+precision mediump float;
 #else
 precision mediump float;
 #endif
@@ -82,8 +82,7 @@ vec3 gradientHash(vec3 p) {
 
 float quinticSmooth(float t) {
   float t2 = t * t;
-  float t3 = t * t2;
-  return 6.0 * t3 * t2 - 15.0 * t2 * t2 + 10.0 * t3;
+  return t2 * t * (t * (t * 6.0 - 15.0) + 10.0);
 }
 
 vec3 cosineGradient(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
@@ -139,7 +138,7 @@ float auroraGlow(float t, vec2 shift) {
   float amp = uNoiseAmp;
   vec2 samplePos = uv * uScale;
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 2; i++) {
     noiseVal += perlin3D(amp, freq, samplePos.x, samplePos.y, t);
     amp *= uOctaveDecay;
     freq *= 2.0;
@@ -151,7 +150,7 @@ float auroraGlow(float t, vec2 shift) {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / max(uResolution.xy, vec2(1.0));
-  float t = uSpeed * 0.4 * uTime;
+  float t = uSpeed * 0.3 * uTime;
 
   vec2 shift = vec2(0.0);
   if (uEnableMouse > 0.5) {
@@ -159,8 +158,8 @@ void main() {
   }
 
   vec3 col = vec3(0.0);
-  col += 0.99 * auroraGlow(t, shift) * cosineGradient(uv.x + uTime * uSpeed * 0.2 * uColorSpeed, vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.3, 0.20, 0.20)) * uColor1;
-  col += 0.99 * auroraGlow(t + uLayerOffset, shift) * cosineGradient(uv.x + uTime * uSpeed * 0.1 * uColorSpeed, vec3(0.5), vec3(0.5), vec3(2.0, 1.0, 0.0), vec3(0.5, 0.20, 0.25)) * uColor2;
+  col += 0.95 * auroraGlow(t, shift) * cosineGradient(uv.x + uTime * uSpeed * 0.15 * uColorSpeed, vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.3, 0.20, 0.20)) * uColor1;
+  col += 0.95 * auroraGlow(t + uLayerOffset, shift) * cosineGradient(uv.x + uTime * uSpeed * 0.1 * uColorSpeed, vec3(0.5), vec3(0.5), vec3(2.0, 1.0, 0.0), vec3(0.5, 0.20, 0.25)) * uColor2;
 
   col *= uBrightness;
   float alpha = clamp(length(col), 0.0, 0.85);
@@ -169,20 +168,20 @@ void main() {
 `;
 
 export default function SoftAurora({
-  speed = 0.6,
-  scale = 1.5,
+  speed = 0.5,
+  scale = 1.4,
   brightness = 1.0,
   color1 = '#f7f7f7',
   color2 = '#e100ff',
-  noiseFrequency = 2.5,
-  noiseAmplitude = 1.0,
+  noiseFrequency = 2.0,
+  noiseAmplitude = 0.9,
   bandHeight = 0.5,
   bandSpread = 1.0,
-  octaveDecay = 0.1,
+  octaveDecay = 0.15,
   layerOffset = 0,
   colorSpeed = 1.0,
   enableMouseInteraction = true,
-  mouseInfluence = 0.25,
+  mouseInfluence = 0.2,
   className = '',
 }: SoftAuroraProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -214,20 +213,22 @@ export default function SoftAurora({
 
     const resize = () => {
       if (!container || !renderer || !gl?.canvas) return;
-      const width = container.offsetWidth || window.innerWidth || 800;
-      const height = container.offsetHeight || window.innerHeight || 600;
+      const width = Math.floor((container.offsetWidth || window.innerWidth || 800) * 0.5);
+      const height = Math.floor((container.offsetHeight || window.innerHeight || 600) * 0.5);
       renderer.setSize(width, height);
+      gl.canvas.style.width = '100%';
+      gl.canvas.style.height = '100%';
       if (program?.uniforms?.uResolution) {
         program.uniforms.uResolution.value = [
-          gl.canvas.width,
-          gl.canvas.height,
-          gl.canvas.width / Math.max(gl.canvas.height, 1),
+          width,
+          height,
+          width / Math.max(height, 1),
         ];
       }
     };
 
     try {
-      renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: false, antialias: false, powerPreference: 'high-performance' });
       gl = renderer.gl;
       if (!gl) throw new Error('No GL context');
 
@@ -264,21 +265,31 @@ export default function SoftAurora({
       });
 
       const mesh = new Mesh(gl, { geometry, program });
+      gl.canvas.style.position = 'absolute';
+      gl.canvas.style.inset = '0';
+      gl.canvas.style.width = '100%';
+      gl.canvas.style.height = '100%';
+      gl.canvas.style.pointerEvents = 'none';
       container.appendChild(gl.canvas);
 
       if (enableMouseInteraction) {
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
         window.addEventListener('mouseleave', handleMouseLeave);
       }
 
+      let lastTime = 0;
       const update = (time: number) => {
         animationFrameId = requestAnimationFrame(update);
+        // Throttle to 30-60 fps
+        if (time - lastTime < 16) return;
+        lastTime = time;
+
         if (!program?.uniforms) return;
         program.uniforms.uTime.value = time * 0.001;
 
         if (enableMouseInteraction) {
-          currentMouse[0] += 0.05 * (targetMouse[0] - currentMouse[0]);
-          currentMouse[1] += 0.05 * (targetMouse[1] - currentMouse[1]);
+          currentMouse[0] += 0.04 * (targetMouse[0] - currentMouse[0]);
+          currentMouse[1] += 0.04 * (targetMouse[1] - currentMouse[1]);
           program.uniforms.uMouse.value[0] = currentMouse[0];
           program.uniforms.uMouse.value[1] = currentMouse[1];
         }
@@ -326,14 +337,14 @@ export default function SoftAurora({
   return (
     <div
       ref={containerRef}
-      className={`soft-aurora-container pointer-events-none fixed inset-0 z-0 overflow-hidden ${className}`}
+      className={`soft-aurora-container pointer-events-none fixed inset-0 z-0 overflow-hidden transform-gpu will-change-transform ${className}`}
       aria-hidden="true"
     >
       {/* Universal Ethereal CSS Aurora Glow in Pink & Purple */}
       <div className="absolute inset-0 pointer-events-none opacity-60">
-        <div className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-gradient-to-br from-fuchsia-600/25 via-purple-600/20 to-transparent blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tl from-pink-500/25 via-purple-700/20 to-transparent blur-[140px] animate-pulse-slow" />
-        <div className="absolute top-[30%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-gradient-to-r from-purple-500/15 via-pink-400/15 to-transparent blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-fuchsia-600/25 via-purple-600/20 to-transparent blur-[100px]" />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-tl from-pink-500/25 via-purple-700/20 to-transparent blur-[110px]" />
+        <div className="absolute top-[30%] left-[20%] w-[50vw] h-[35vw] rounded-full bg-gradient-to-r from-purple-500/15 via-pink-400/15 to-transparent blur-[80px]" />
       </div>
     </div>
   );

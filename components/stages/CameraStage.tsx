@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from '@/components/providers/SessionContext';
 import ScanReticle from '@/components/ui/ScanReticle';
-import { Camera, Upload, Sparkles, AlertCircle, RefreshCw, SwitchCamera } from 'lucide-react';
+import { Camera, Upload, Sparkles, RefreshCw, SwitchCamera, ShieldAlert, Image as ImageIcon } from 'lucide-react';
 import { SAMPLE_HEIRLOOMS } from '@/lib/samples';
 
 export default function CameraStage() {
@@ -14,6 +14,7 @@ export default function CameraStage() {
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [isScanning, setIsScanning] = useState(false);
   const [statusText, setStatusText] = useState('Hold steady over your heirloom...');
+  const [cameraReady, setCameraReady] = useState(false);
 
   useEffect(() => {
     let activeStream: MediaStream | null = null;
@@ -21,8 +22,10 @@ export default function CameraStage() {
     async function startCamera() {
       try {
         setCameraError(null);
+        setCameraReady(false);
+
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('Camera access not supported by browser');
+          throw new Error('Camera access not supported by this browser');
         }
 
         const constraints: MediaStreamConstraints = {
@@ -40,10 +43,17 @@ export default function CameraStage() {
 
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
-          videoRef.current.play();
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current?.play().then(() => {
+              setCameraReady(true);
+            }).catch((e) => {
+              console.warn('Video play note:', e);
+              setCameraReady(true);
+            });
+          };
         }
       } catch (err: any) {
-        console.warn('Camera initiation note:', err);
+        console.warn('Camera access error:', err);
         setCameraError(err.message || 'Unable to access camera device');
       }
     }
@@ -61,6 +71,10 @@ export default function CameraStage() {
     if (stream) {
       stream.getTracks().forEach((t) => t.stop());
     }
+    setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  };
+
+  const handleRetryCamera = () => {
     setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
   };
 
@@ -82,7 +96,6 @@ export default function CameraStage() {
 
     setCapturedImage(base64Image);
 
-    // Call /api/scan
     try {
       setStatusText('Identifying visual craft signatures & patina...');
       const response = await fetch('/api/scan', {
@@ -147,59 +160,70 @@ export default function CameraStage() {
   };
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto min-h-[80vh] flex flex-col items-center justify-center p-4">
+    <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center p-2 sm:p-4 z-10">
       {/* Top instruction header */}
-      <div className="mb-4 text-center">
-        <h2 className="text-xl sm:text-2xl font-serif font-bold text-white flex items-center justify-center gap-2">
+      <div className="mb-3 text-center">
+        <h2 className="text-lg sm:text-2xl font-serif font-bold text-white flex items-center justify-center gap-2">
           <Camera className="w-5 h-5 text-aurora-pink" />
-          <span>Point at Your Sacred Heirloom</span>
+          <span>Point Camera or Upload Heirloom Photo</span>
         </h2>
-        <p className="text-xs sm:text-sm text-pink-200/80 font-sans mt-1">
-          Hold steady. The Ancestor will examine the patina, craft markers, and materials.
+        <p className="text-xs text-pink-200/80 font-sans mt-0.5">
+          Hold steady or upload any image. The Ancestor will examine the patina and craftsmanship.
         </p>
       </div>
 
-      {/* Main Viewfinder Frame */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[65vh] rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/35 shadow-glow-pink bg-black">
-        {/* Video feed or error fallback */}
-        {!cameraError ? (
-          <video
-            ref={videoRef}
-            playsInline
-            muted
-            autoPlay
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-obsidian/90">
-            <AlertCircle className="w-12 h-12 text-aurora-pink mb-3 animate-pulse" />
-            <h3 className="text-lg font-serif font-bold text-pink-200 mb-2">
-              Camera Not Connected
+      {/* Main Viewfinder Frame (Compact & responsive) */}
+      <div className="relative w-full h-[280px] sm:h-[360px] md:h-[400px] max-w-3xl rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/40 shadow-glow-pink bg-black flex items-center justify-center">
+        {/* Video feed */}
+        <video
+          ref={videoRef}
+          playsInline
+          muted
+          autoPlay
+          className={`w-full h-full object-cover ${cameraError ? 'hidden' : 'block'}`}
+        />
+
+        {/* Camera Permission / Error Overlay */}
+        {cameraError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-obsidian/95 z-20">
+            <ShieldAlert className="w-10 h-10 text-aurora-pink mb-2 animate-pulse" />
+            <h3 className="text-base font-serif font-bold text-pink-200 mb-1">
+              Camera Access Restricted
             </h3>
-            <p className="text-xs text-neutral-300 max-w-md mb-6 font-sans">
-              {cameraError}. You can upload any photo of your heirloom directly, or test with an ancestral preset below.
+            <p className="text-xs text-neutral-300 max-w-sm mb-4 font-sans leading-relaxed">
+              If your camera is blocked or shutter is closed, you can upload any photo directly or choose a preset below.
             </p>
-            <label className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-aurora-pink to-purple-600 hover:brightness-110 text-white font-serif text-sm tracking-wider uppercase cursor-pointer shadow-glow-pink transition-all">
-              <Upload className="w-4 h-4" />
-              <span>Upload Heirloom Photo</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-            </label>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <label className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-aurora-pink to-purple-600 hover:brightness-110 text-white font-serif text-xs tracking-wider uppercase cursor-pointer shadow-glow-pink transition-all">
+                <Upload className="w-3.5 h-3.5" />
+                <span>Upload Photo</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+
+              <button
+                onClick={handleRetryCamera}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-panel text-pink-200 hover:text-white text-xs font-serif transition-all"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Retry Camera</span>
+              </button>
+            </div>
           </div>
         )}
 
         {/* Reticle Overlay */}
-        <ScanReticle isScanning={isScanning || !cameraError} statusText={statusText} />
+        <ScanReticle isScanning={isScanning || (!cameraError && cameraReady)} statusText={statusText} />
 
-        {/* Camera Switcher Button (for mobile) */}
+        {/* Camera Switcher Button */}
         {!cameraError && (
           <button
             onClick={toggleFacingMode}
-            className="absolute top-4 right-4 p-3 rounded-full bg-obsidian-card text-pink-200 border border-white/20 hover:scale-105 transition-all z-30 shadow-lg"
+            className="absolute top-3 right-3 p-2.5 rounded-full bg-obsidian-card text-pink-200 border border-white/20 hover:scale-105 transition-all z-30 shadow-lg cursor-pointer"
             title="Switch Camera"
           >
             <SwitchCamera className="w-4 h-4" />
@@ -207,29 +231,34 @@ export default function CameraStage() {
         )}
       </div>
 
-      {/* Bottom Controls Bar */}
-      <div className="mt-6 flex flex-col items-center gap-4 w-full">
-        <div className="flex items-center gap-4">
-          {!cameraError && (
-            <button
-              onClick={captureFrame}
-              disabled={isScanning}
-              className="relative group px-10 py-4 rounded-full bg-gradient-to-r from-aurora-pink via-purple-500 to-indigo-500 text-white font-serif font-bold text-base tracking-wider uppercase shadow-glow-pink hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <div className="flex items-center gap-3">
-                {isScanning ? (
-                  <RefreshCw className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Camera className="w-5 h-5" />
-                )}
-                <span>{isScanning ? 'Analyzing Heirloom...' : 'Capture & Identify'}</span>
-              </div>
-            </button>
-          )}
+      {/* Primary Action Controls Bar */}
+      <div className="mt-4 flex flex-col items-center gap-3 w-full">
+        <div className="flex items-center justify-center gap-3 w-full max-w-md">
+          {/* Main Capture Button */}
+          <button
+            onClick={captureFrame}
+            disabled={isScanning || !!cameraError}
+            className={`flex-1 flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl font-serif font-bold text-sm tracking-wider uppercase transition-all shadow-glow-pink ${
+              cameraError
+                ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed opacity-50'
+                : 'bg-gradient-to-r from-aurora-pink via-purple-500 to-indigo-500 text-white hover:scale-105 active:scale-95 cursor-pointer'
+            }`}
+          >
+            {isScanning ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Camera className="w-4 h-4" />
+            )}
+            <span>{isScanning ? 'Analyzing...' : 'Capture Photo'}</span>
+          </button>
 
-          {/* File Upload Fallback Button */}
-          <label className="p-4 rounded-full glass-panel border border-white/20 text-neutral-200 hover:text-white hover:border-aurora-pink cursor-pointer transition-all hover:scale-105 shadow-md" title="Upload an image">
-            <Upload className="w-5 h-5" />
+          {/* Upload Photo Button */}
+          <label
+            className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl glass-panel border border-aurora-pink/40 text-pink-200 hover:text-white hover:border-aurora-pink cursor-pointer transition-all hover:scale-105 shadow-md text-xs font-serif uppercase tracking-wider"
+            title="Upload from device"
+          >
+            <Upload className="w-4 h-4 text-aurora-pink" />
+            <span>Upload Image</span>
             <input
               type="file"
               accept="image/*"
@@ -240,28 +269,25 @@ export default function CameraStage() {
         </div>
 
         {/* Quick Sample Heirloom Selector Gallery */}
-        <div className="w-full max-w-4xl mt-4 pt-4 border-t border-white/10 flex flex-col items-center gap-2">
+        <div className="w-full max-w-3xl mt-2 pt-3 border-t border-white/10 flex flex-col items-center gap-2">
           <span className="text-[11px] font-serif uppercase tracking-widest text-pink-300 flex items-center gap-1.5 font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-aurora-pink" />
-            <span>Or select an ancestral heirloom sample for instant identification:</span>
+            <span>Or try an ancestral heirloom preset:</span>
           </span>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 w-full">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 w-full">
             {SAMPLE_HEIRLOOMS.map((sample) => (
               <button
                 key={sample.id}
                 onClick={() => handleSelectSample(sample)}
-                className="p-2 rounded-2xl glass-panel border border-white/10 hover:border-aurora-pink text-left transition-all hover:scale-[1.03] flex flex-col items-center gap-2 group cursor-pointer"
+                className="p-1.5 rounded-xl glass-panel border border-white/10 hover:border-aurora-pink text-left transition-all hover:scale-[1.04] flex flex-col items-center gap-1 group cursor-pointer"
               >
                 <div
-                  className="w-full aspect-square rounded-xl bg-cover bg-center border border-white/15 group-hover:shadow-glow-pink transition-shadow"
+                  className="w-full aspect-square rounded-lg bg-cover bg-center border border-white/15 group-hover:shadow-glow-pink transition-shadow"
                   style={{ backgroundImage: `url(${sample.imageUrl})` }}
                 />
                 <div className="w-full text-center overflow-hidden">
-                  <div className="text-[11px] font-serif font-bold text-white truncate">
-                    {sample.name}
-                  </div>
-                  <div className="text-[9px] text-pink-200/70 truncate">
-                    {sample.estimatedEra}
+                  <div className="text-[10px] font-serif font-bold text-white truncate">
+                    {sample.name.split(' ')[0]} {sample.name.split(' ')[1] || ''}
                   </div>
                 </div>
               </button>

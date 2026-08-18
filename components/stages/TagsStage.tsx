@@ -6,6 +6,19 @@ import { useSession } from '@/components/providers/SessionContext';
 import FloatingTag from '@/components/ui/FloatingTag';
 import AncestorVoice from '@/components/ui/AncestorVoice';
 import { Sparkles, MessageSquare, RotateCcw, Clock, Layers, BookOpen, Edit2, Check, Eye } from 'lucide-react';
+import { ARTIFACT_ONTOLOGY } from '@/lib/visionClassifier';
+
+const QUICK_CATEGORIES = [
+  { key: 'book', label: '📚 Book / Journal' },
+  { key: 'car', label: '🚗 Vintage Car' },
+  { key: 'watch', label: '🕰️ Pocket Watch' },
+  { key: 'camera', label: '📷 Vintage Camera' },
+  { key: 'lamp', label: '🪔 Pooja Lamp' },
+  { key: 'textile', label: '🧣 Silk Shawl' },
+  { key: 'jewelry', label: '📿 Heirloom Jewelry' },
+  { key: 'woodbox', label: '📦 Spice Box' },
+  { key: 'instrument', label: '🎻 Musical Instrument' },
+];
 
 export default function TagsStage() {
   const {
@@ -30,6 +43,14 @@ export default function TagsStage() {
       });
     }
     setIsEditingTitle(false);
+  };
+
+  const handleSelectQuickCategory = (key: string) => {
+    const template = ARTIFACT_ONTOLOGY[key];
+    if (template) {
+      setScanResult(template);
+      setCustomObjectName(template.object);
+    }
   };
 
   const handleProceedToDialogue = async () => {
@@ -94,13 +115,9 @@ export default function TagsStage() {
   } Notice ${scanResult.details.join(', and ')}. It carries the living heartbeat of your lineage.`;
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto min-h-[85vh] flex flex-col items-center justify-center p-4 z-10">
+    <div className="relative w-full max-w-5xl mx-auto min-h-[85vh] flex flex-col items-center justify-center p-3 sm:p-4 z-10">
       {/* Top Identification Header Card */}
-      <motion.div
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full mb-4 p-6 rounded-3xl glass-panel-ember border border-aurora-pink/35 text-left flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl"
-      >
+      <div className="w-full mb-3 p-5 sm:p-6 rounded-3xl glass-panel-ember border border-aurora-pink/35 text-left flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
         <div className="flex-1">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-pink-300 mb-1.5">
             <Sparkles className="w-4 h-4 text-aurora-pink animate-pulse" />
@@ -131,12 +148,12 @@ export default function TagsStage() {
             </div>
           ) : (
             <div className="flex items-center gap-2.5 group">
-              <h2 className="text-2xl sm:text-3xl font-serif font-extrabold text-white tracking-wide">
+              <h2 className="text-xl sm:text-3xl font-serif font-extrabold text-white tracking-wide">
                 {activeName}
               </h2>
               <button
                 onClick={() => setIsEditingTitle(true)}
-                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-pink-300 transition-colors opacity-80 group-hover:opacity-100"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-pink-300 transition-colors opacity-80 group-hover:opacity-100 cursor-pointer"
                 title="Customize / Refine Name"
               >
                 <Edit2 className="w-3.5 h-3.5" />
@@ -145,31 +162,47 @@ export default function TagsStage() {
           )}
 
           {scanResult.culturalNote && (
-            <p className="text-xs sm:text-sm text-pink-100/90 font-serif mt-1.5 italic">
+            <p className="text-xs sm:text-sm text-pink-100/90 font-serif mt-1 italic">
               “{scanResult.culturalNote}”
             </p>
           )}
+
+          {/* 1-Click Quick Category Switcher */}
+          <div className="mt-3 pt-2 border-t border-white/10 flex flex-wrap items-center gap-1.5">
+            <span className="text-[10px] uppercase font-mono tracking-wider text-pink-300/80 mr-1">
+              Switch Type:
+            </span>
+            {QUICK_CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => handleSelectQuickCategory(cat.key)}
+                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-aurora-pink/20 hover:border-aurora-pink border border-white/10 text-[11px] text-pink-200 transition-all cursor-pointer"
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Metadata Badges */}
         <div className="flex flex-wrap gap-2 md:self-center shrink-0">
           {scanResult.estimatedEra && (
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-purple-200 font-sans">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-purple-200 font-sans">
               <Clock className="w-3.5 h-3.5 text-aurora-purple" />
               <span>{scanResult.estimatedEra}</span>
             </div>
           )}
           {scanResult.detectedMaterial && (
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-pink-200 font-sans">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-pink-200 font-sans">
               <Layers className="w-3.5 h-3.5 text-aurora-pink" />
               <span>{scanResult.detectedMaterial}</span>
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Main AR Display Frame with Floating Tags */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/40 shadow-2xl bg-black">
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] max-h-[50vh] rounded-3xl overflow-hidden glass-panel border-2 border-aurora-pink/40 shadow-xl bg-black">
         {capturedImage ? (
           <div
             className="w-full h-full bg-cover bg-center filter brightness-95 contrast-105"
@@ -190,54 +223,39 @@ export default function TagsStage() {
         ))}
       </div>
 
-      {/* Spoken Heirloom Heritage Narration in Warm Lady Voice */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="w-full mt-4"
-      >
+      {/* Spoken Heirloom Heritage Narration */}
+      <div className="w-full mt-3">
         <AncestorVoice
           text={heirloomNarration}
           autoPlay={true}
           customTitle={`Heirloom Lore: ${activeName}`}
         />
-      </motion.div>
+      </div>
 
       {/* Detailed Heirloom Craft Breakdown Dossier */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="w-full mt-4 p-5 rounded-3xl glass-panel border border-white/10 text-left"
-      >
-        <div className="flex items-center gap-2 mb-3 text-xs font-mono uppercase tracking-widest text-pink-300">
+      <div className="w-full mt-3 p-4 rounded-2xl glass-panel border border-white/10 text-left">
+        <div className="flex items-center gap-2 mb-2 text-xs font-mono uppercase tracking-widest text-pink-300">
           <BookOpen className="w-3.5 h-3.5" />
           <span>Ancestral Visual Intelligence &amp; Craft Observations</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {scanResult.details.map((detail, index) => (
             <div
               key={index}
-              className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5 text-xs text-neutral-200 font-sans"
+              className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-start gap-2 text-xs text-neutral-200 font-sans"
             >
-              <Eye className="w-4 h-4 text-aurora-pink shrink-0 mt-0.5" />
+              <Eye className="w-3.5 h-3.5 text-aurora-pink shrink-0 mt-0.5" />
               <span className="leading-relaxed">{detail}</span>
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* Action Footer */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 w-full"
-      >
+      <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
         <button
           onClick={handleRescan}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl glass-panel border border-white/10 hover:border-white/30 text-neutral-300 hover:text-white text-sm font-sans transition-all cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl glass-panel border border-white/10 hover:border-white/30 text-neutral-300 hover:text-white text-xs font-sans transition-all cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" />
           <span>Rescan Different Photo</span>
@@ -246,12 +264,12 @@ export default function TagsStage() {
         <button
           onClick={handleProceedToDialogue}
           disabled={isLoadingQuestions}
-          className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-aurora-pink via-purple-500 to-indigo-500 text-white font-serif font-bold text-base tracking-wider uppercase shadow-glow-pink hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+          className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-aurora-pink via-purple-500 to-indigo-500 text-white font-serif font-bold text-sm tracking-wider uppercase shadow-glow-pink hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
         >
-          <MessageSquare className="w-5 h-5" />
+          <MessageSquare className="w-4 h-4" />
           <span>{isLoadingQuestions ? 'Summoning Ancestor...' : 'Speak with the Ancestor'}</span>
         </button>
-      </motion.div>
+      </div>
     </div>
   );
 }
