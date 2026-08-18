@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0A0612;
+  --foreground: #F7F7F7;
+  --font-cinzel: 'Cinzel', serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0A0612;
+  color: #F7F7F7;
+  font-family: var(--font-inter);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Cinematic film grain overlay */
+.film-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Glassmorphism panels with ethereal pink/purple tint */
+.glass-panel {
+  background: rgba(18, 10, 32, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(225, 0, 255, 0.18);
+  border-radius: 20px;
+}
+
+.glass-panel-gold {
+  background: rgba(26, 12, 44, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(192, 132, 252, 0.32);
+  border-radius: 20px;
+}
+
+.glass-panel-ember {
+  background: rgba(30, 10, 48, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(225, 0, 255, 0.36);
+  border-radius: 20px;
+}
+
+/* Liquid crystal text shine in Pink & Purple */
+.liquid-text {
+  background: linear-gradient(
+    135deg,
+    #F7F7F7 0%,
+    #F472B6 25%,
+    #E100FF 50%,
+    #C084FC 75%,
+    #F7F7F7 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shine 6s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0612;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(225, 0, 255, 0.35);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(225, 0, 255, 0.65);
+}
+
+/* Text glow utilities */
+.text-glow-pink {
+  text-shadow: 0 0 16px rgba(225, 0, 255, 0.6), 0 0 32px rgba(225, 0, 255, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 16px rgba(168, 85, 247, 0.6), 0 0 32px rgba(168, 85, 247, 0.3);
+}
+
+.text-glow-ember {
+  text-shadow: 0 0 16px rgba(225, 0, 255, 0.6), 0 0 32px rgba(225, 0, 255, 0.3);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 16px rgba(192, 132, 252, 0.6), 0 0 32px rgba(192, 132, 252, 0.3);
+}
