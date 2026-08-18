@@ -30,21 +30,21 @@ export default function QuestionStage() {
       : [
           {
             id: 1,
-            question: `Looking closely at this ${objectTitle} — whose hands first gave this to your family, and what was the world like around them?`,
-            focusDetail: 'Origin & Giver',
-            contextHint: 'Recall whose loving voice or gentle hands first passed this down.',
+            question: `Who in your family originally owned or gave you this ${objectTitle}?`,
+            focusDetail: 'Original Owner',
+            contextHint: 'Think of your parents, grandparents, or who brought it home.',
           },
           {
             id: 2,
-            question: `In what quiet room, journey, or sacred celebration did this ${objectTitle} keep watch over your loved ones?`,
-            focusDetail: 'Living Memory & Sanctuary',
-            contextHint: 'Think of where this object rested on quiet mornings or festival nights.',
+            question: `What is a favorite memory, celebration, or story you have with this ${objectTitle}?`,
+            focusDetail: 'Favorite Memory',
+            contextHint: 'A special trip, a festive day, or where it lived in your home.',
           },
           {
             id: 3,
-            question: `If this ${objectTitle} could whisper one eternal truth across the century to the children yet to come, what vow does it protect?`,
-            focusDetail: 'Future Legacy & Vow',
-            contextHint: 'Speak of the strength, love, or devotion you carry forward today.',
+            question: `Why is this ${objectTitle} special to you, and who would you pass it on to?`,
+            focusDetail: 'Family Legacy',
+            contextHint: 'What makes it precious to keep in your family.',
           },
         ];
 

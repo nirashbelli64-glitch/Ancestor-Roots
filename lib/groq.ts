@@ -247,9 +247,6 @@ export async function generateProvenanceBlessing(
 }
 
 function getFallbackQuestions(objectName: string, details: string[]): HeritageQuestion[] {
-  const detail1 = details[0] || 'the craftsmanship and unique markings';
-  const detail2 = details[1] || 'the aged patina and texture';
-
   const lower = objectName.toLowerCase();
 
   // If it's a car / vehicle
@@ -257,21 +254,21 @@ function getFallbackQuestions(objectName: string, details: string[]): HeritageQu
     return [
       {
         id: 1,
-        question: `Looking closely at ${detail1} on this classic car — whose steady hands first gripped the steering wheel, and where did your family journey in it?`,
-        focusDetail: 'Original Driver & First Journeys',
-        contextHint: 'Recall whose laughter or proud smile steered this vehicle on long road trips.',
+        question: `Who in your family owned or drove this car first?`,
+        focusDetail: 'Original Driver & Owner',
+        contextHint: 'Think of your parents, grandparents, or whoever brought it home.',
       },
       {
         id: 2,
-        question: `Notice ${detail2}. What joyful weddings, festival migrations, or countryside drives did this automobile bear witness to?`,
-        focusDetail: 'Family Migrations & Milestones',
-        contextHint: 'Think of the unpaved roads, family songs, and destinations it reached.',
+        question: `What is a favorite road trip, wedding, or family memory you have in it?`,
+        focusDetail: 'Favorite Family Trip',
+        contextHint: 'A special journey, festival ride, or memorable day out.',
       },
       {
         id: 3,
-        question: `If this magnificent classic car could speak across the miles to your descendants, what spirit of courage, wanderlust, and freedom does it carry forward?`,
-        focusDetail: 'Legacy of Freedom & Courage',
-        contextHint: 'Speak of the perseverance and adventurous spirit of your ancestors.',
+        question: `Why is this car special to your family, and what feelings does it bring back?`,
+        focusDetail: 'Family Meaning & Pride',
+        contextHint: 'What makes you smile when you remember it today.',
       },
     ];
   }
@@ -280,21 +277,21 @@ function getFallbackQuestions(objectName: string, details: string[]): HeritageQu
   return [
     {
       id: 1,
-      question: `Looking closely at ${detail1} on this ${objectName} — whose hands first gave this to your family, and what was the world like around them?`,
-      focusDetail: 'Origin & Giver',
-      contextHint: 'Recall whose loving voice or gentle hands first passed this down.',
+      question: `Who in your family originally owned or gave you this ${objectName}?`,
+      focusDetail: 'Original Owner & Giver',
+      contextHint: 'Think of your parents, grandparents, or a loving elder.',
     },
     {
       id: 2,
-      question: `Notice ${detail2}. In what quiet room, journey, or sacred celebration did this heirloom keep watch over your loved ones?`,
-      focusDetail: 'Living Memory & Sanctuary',
-      contextHint: 'Think of where this object rested on quiet mornings or festival nights.',
+      question: `What is your favorite memory, celebration, or story connected to it?`,
+      focusDetail: 'Special Memory',
+      contextHint: 'A festive gathering, a quiet conversation, or where it was kept.',
     },
     {
       id: 3,
-      question: `If this ${objectName} could whisper one eternal truth across the century to the children yet to come, what vow does it protect?`,
-      focusDetail: 'Future Legacy & Vow',
-      contextHint: 'Speak of the strength, love, or devotion you carry forward today.',
+      question: `Why is this ${objectName} special to you, and who in the family would you pass it on to?`,
+      focusDetail: 'Family Legacy',
+      contextHint: 'What makes it precious to preserve for the next generation.',
     },
   ];
 }
