@@ -2,28 +2,87 @@
 
 > **A cinematic, AI-powered living heritage storytelling experience that awakens family heirlooms through AR lens vision, oral dialogue, ethnographic craft provenance, and warm humanized multilingual voice synthesis.**
 
----
-
-## 🌟 Key Features
-
-- **🌸 React Bits `<SoftAurora />` WebGL Shader**: GPU-accelerated Perlin noise aurora wave curtains in rich luminous crystal (`#f7f7f7`) and radiant magenta/purple (`#e100ff`) with interactive mouse physics.
-- **👁️ Dynamic Multi-Category Visual Recognition**: Detects automobiles (Ford Model T, classic convertibles), timepieces, cameras, textiles, brassware, carved wooden boxes, ancestral jewelry, ledgers, and musical instruments.
-- **🏷️ Screen-Space Floating AR Tags**: Interactive beacons highlighting craft techniques, material integrity, and historical patina.
-- **🎙️ Warm Humanized Maternal Female Voice (TTS)**: Soothing storytelling voice with natural inflection and real-time audio waveform equalizer bars.
-- **🌐 14+ Regional & Global Languages (STT + TTS)**: Supports Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Spanish, French, Arabic, Japanese, and English.
-- **📜 Provenance-Labeled Blessing**: 3-tier synthesis weaving Personal Truth, Regional Archival Context, and the Ancestor's Lyrical Telling.
-- **🏅 Ancestral Ember Badge & Memory Thread**: Unlockable digital heirloom medallions and an intergenerational session archive.
+[![Next.js 14](https://img.shields.io/badge/Next.js-14.2.35-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![WebGL](https://img.shields.io/badge/WebGL-OGL_Shaders-E100FF?style=for-the-badge&logo=webgl)](https://github.com/oframe/ogl)
+[![Groq AI](https://img.shields.io/badge/AI-Groq_Vision_&_LLMs-f97316?style=for-the-badge)](https://groq.com/)
 
 ---
 
-## 🛠️ Tech Stack
+## 🌌 Overview
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, TypeScript)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + Custom Glassmorphism
-- **Shaders & 3D**: `ogl` (WebGL 3D Shader, Perlin Noise)
+**The Ancestor's Test** bridges ancestral memory and cutting-edge web technology. Point your camera at any family heirloom, historic keepsake, or cherished object to awaken the Ancestor. Through screen-space AR tags, authentic craft history, and simple conversational dialogue, the Ancestor listens to your family memories and synthesizes a permanent **Provenance-Labeled Blessing** certified with verifiable regional lineage.
+
+---
+
+## 🎨 Design & Visual Aesthetic
+
+- **🌸 React Bits `<SoftAurora />` WebGL Shader**: GPU-accelerated Perlin noise aurora curtains in luminous mist (`#f7f7f7`) and radiant magenta/purple (`#e100ff`) with interactive mouse physics.
+- **✨ Cosmic Obsidian Glassmorphism**: Deep space backdrop (`#0A0612`), floating particle sparkles, frosted magenta borders, and liquid crystal text gradients.
+- **⚡ 60 FPS Performance**: Optimized half-resolution offscreen rendering, lightweight particle engine, and hardware-accelerated animations.
+
+---
+
+## 👁️ Intelligent Dynamic Visual Recognition
+
+The visual vision engine identifies a diverse spectrum of ancestral objects with tailored craft observations, material compositions, historical eras, and AR coordinate tags:
+
+| Category | Object Recognized | Materials & Craft Observations |
+|:---|:---|:---|
+| 📚 **Books & Journals** | *Handwritten Leather-Bound Ancestral Book & Journal* | Vegetable-tanned leather, cotton rag parchment, iron gall calligraphy, hand-stitched archival spine. |
+| 🚗 **Vintage Automobiles** | *1920s Classic Model T Vintage Automobile* | Pressed steel body, artillery wooden spoke wheels, black enamel cowl, folding canvas convertible hood. |
+| 🕰️ **Timepieces** | *1924 Victorian Brass Pocket Watch* | Hand-engraved brass filigree bezel, Swiss mechanical movement, fluted winding crown, oxidized patina. |
+| 📷 **Vintage Cameras** | *1954 Classic Rangefinder Camera* | Satin chrome chassis, vulcanite leatherette grip, coated optical lens, machined mechanical shutter dial. |
+| 🪔 **Sacred Brassware** | *Hand-Cast Brass Diya Pooja Lamp* | Lost-wax cast bell metal, Mayura peacock crest, five-wick cardinal basin, sacred ceremonial smoke patina. |
+| 🧣 **Handwoven Textiles** | *Handwoven Crimson Silk Ikat Shawl* | Pure mulberry silk, double-ikat resist-dyeing, organic madder hue, hand-knotted gold zari fringes. |
+| 📿 **Ancestral Jewelry** | *Ancestral Gold Filigree Jhumka Earrings* | 22K hand-beaten gold, royal Kundan stone setting, delicate wire floral rosettes, natural seed pearl drops. |
+| 📦 **Heritage Kitchen Relics** | *Carved Rosewood Masala Dabba* | Solid dark rosewood, hand-chiseled lotus relief, aromatic spice oil patina, seven nested hammered brass cups. |
+| 🏍️ **Classic Motorcycles** | *Vintage 1950s Classic Motorcycle* | Polished chrome teardrop tank, cast iron cooling fins, sprung leather solo saddle with road-worn patina. |
+| 🎻 **Classical Instruments** | *Hand-Carved Saraswati Veena* | Matured jackwood, sacred dragon Yali headstock, 24 brass frets on hardened beeswax, bronze resonance strings. |
+
+---
+
+## 🎙️ Multilingual Warm Maternal Voice (TTS & STT)
+
+- **Warm Female Voice**: Specially tuned pitch (1.04) and gentle, comforting maternal cadence (0.88) with real-time soundwave equalizer bars.
+- **14+ Regional & Global Languages**: Full Speech-to-Text (STT) and Text-to-Speech (TTS) support for:
+  - 🇮🇳 Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi
+  - 🌍 English, Spanish, French, Arabic, Japanese
+
+---
+
+## 🏛️ The 7-Stage Interactive Pipeline
+
+```mermaid
+graph TD
+    A[1. Awakening Landing Stage] --> B[2. AR Camera / Photo Upload]
+    B --> C[3. Floating AR Tags & Spoken Lore]
+    C --> D[4. Simple Oral Memory Dialogue]
+    D --> E[5. Weaving Memory Tapestry]
+    E --> F[6. Provenance-Labeled Blessing]
+    F --> G[7. Ancestral Badge & Memory Thread]
+```
+
+1. **Awakening**: Ethereal `<SoftAurora />` welcome with liquid text and sample heirloom selector.
+2. **AR Camera & Lens**: Live camera stream, category selector pill bar (`📚 Book`, `🚗 Car`, `🕰️ Watch`, etc.), photo upload, and laser reticle HUD.
+3. **Floating AR Tags**: Screen-space coordinate tags, editable heirloom title, 1-click category switcher, and spoken lore narration.
+4. **Oral Dialogue**: 3 short, natural, humanized conversational questions answering via live voice input or keyboard.
+5. **Weaving Tapestry**: Step-by-step memory token extraction and ethnographic archival lookup with live progress checkmarks.
+6. **Provenance Blessing**: Sacred 3-tier blessing weaving Personal Memory, Archival Roots, and the Ancestor's Lyrical Telling.
+7. **Ancestral Badge**: Unlockable glowing digital medallion and multi-generational session archive.
+
+---
+
+## 🛠️ Tech Stack & Architecture
+
+- **Frontend**: [Next.js 14](https://nextjs.org/) (App Router, TypeScript, React 18)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + Custom Glassmorphism & Neon Tokens
+- **Shaders & 3D**: `ogl` (WebGL 3D Procedural Perlin Noise Raymarching)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/) + Canvas Particle Engine + Canvas Confetti
-- **Audio & Speech**: Web Speech API (SpeechRecognition + SpeechSynthesis)
-- **AI Backend**: Groq API (`llama-3.2-90b-vision-preview`, `llama-3.3-70b-versatile`) + Zero-Downtime Fallback
+- **Typography**: [Google Fonts](https://fonts.google.com/) (`Cinzel` & `Inter` via `next/font/google`)
+- **Speech & Audio**: Web Speech API (`SpeechRecognition` + `SpeechSynthesis`)
+- **AI Models**: Groq API (`llama-3.2-90b-vision-preview`, `llama-3.3-70b-versatile`) with built-in zero-downtime intelligent visual ontology.
 
 ---
 
@@ -31,8 +90,8 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/ancestors-test.git
-cd ancestors-test
+git clone https://github.com/nirashbelli64-glitch/Ancestor-Roots.git
+cd Ancestor-Roots
 ```
 
 ### 2. Install dependencies
@@ -40,12 +99,12 @@ cd ancestors-test
 npm install
 ```
 
-### 3. Environment Variables (Optional)
+### 3. Configure Environment Variables (Optional)
 Copy `.env.local.example` to `.env.local`:
 ```bash
 cp .env.local.example .env.local
 ```
-Add your Groq API key (if you want live cloud LLM generation; the app includes realistic dynamic fallback simulation):
+Add your Groq API key (optional — app includes full offline dynamic visual classification):
 ```env
 GROQ_API_KEY=your_groq_api_key_here
 ```
@@ -54,7 +113,13 @@ GROQ_API_KEY=your_groq_api_key_here
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open **[http://localhost:3000](http://localhost:3000)** in your browser.
+
+### 5. Build for Production
+```bash
+npm run build
+npm run start
+```
 
 ---
 
@@ -70,23 +135,37 @@ ancestors-test/
 │   │   ├── roots/route.ts        # Archival craft & ethnographic context
 │   │   └── blessing/route.ts     # Provenance blessing synthesis
 │   ├── globals.css               # Cosmic obsidian & pink/purple glassmorphism
-│   ├── layout.tsx                # Font imports & metadata
+│   ├── layout.tsx                # next/font/google Cinzel/Inter font loader
 │   └── page.tsx                  # Main 7-stage orchestrator
 ├── components/
 │   ├── stages/                   # 7 interactive pipeline stages
-│   │   ├── LandingStage.tsx
-│   │   ├── CameraStage.tsx
-│   │   ├── TagsStage.tsx
-│   │   ├── QuestionStage.tsx
-│   │   ├── ProcessingStage.tsx
-│   │   ├── BlessingStage.tsx
-│   │   └── BadgeStage.tsx
-│   ├── ui/                       # Glassmorphic components & SoftAurora WebGL
-│   └── providers/                # SessionContext state management
-└── lib/                          # Prompts, language definitions, vision ontology
+│   │   ├── LandingStage.tsx      # Welcome stage with SoftAurora
+│   │   ├── CameraStage.tsx       # Viewfinder, category pill selector, upload
+│   │   ├── TagsStage.tsx         # AR tags, 1-click switcher, editable title
+│   │   ├── QuestionStage.tsx     # Simple conversational dialogue (STT/TTS)
+│   │   ├── ProcessingStage.tsx   # Weaving memory tapestry
+│   │   ├── BlessingStage.tsx     # 3-tier provenance blessing
+│   │   └── BadgeStage.tsx        # Unlockable ancestral badges
+│   ├── ui/                       # UI components (SoftAurora, Particles, Voice)
+│   │   ├── AncestorVoice.tsx     # Warm maternal female TTS player
+│   │   ├── FloatingTag.tsx       # Screen-space AR beacon
+│   │   ├── LanguageSelector.tsx  # 14+ language switcher
+│   │   ├── ParticleCanvas.tsx    # 60fps lightweight ember canvas
+│   │   ├── ScanReticle.tsx       # Neon HUD laser scanner
+│   │   ├── SoftAurora.tsx        # WebGL Perlin noise shader (#f7f7f7, #e100ff)
+│   │   └── VoiceInput.tsx        # Speech-to-Text microphone input
+│   └── providers/
+│       └── SessionContext.tsx    # Global session state & Memory Thread
+└── lib/
+    ├── groq.ts                   # Groq vision & chat completions with fallback
+    ├── languages.ts              # 14+ language definitions & voice matching
+    ├── prompts.ts                # Conversational system prompts
+    ├── samples.ts                # Heirloom presets gallery
+    ├── types.ts                  # TypeScript schema definitions
+    └── visionClassifier.ts       # 10+ category visual ontology & pixel analyzer
 ```
 
 ---
 
 ## 📜 License
-MIT
+MIT © 2026 The Ancestor's Test Team
